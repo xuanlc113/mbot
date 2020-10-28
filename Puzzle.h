@@ -1,6 +1,8 @@
 #ifndef PUZZLE_H
 #define PUZZLE_H
 
+// puzzle cases
+
 #include "Motion.h"
 #include "Proximity.h"
 #include "Tune.h"

@@ -1,6 +1,8 @@
 #ifndef COLOR_H
 #define COLOR_H
 
+// detect color
+
 #include "Puzzle.h"
 
 // return int color map?
