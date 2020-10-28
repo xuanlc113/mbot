@@ -1,8 +1,6 @@
 #ifndef PUZZLE_H
 #define PUZZLE_H
 
-// puzzle cases
-
 #include "Motion.h"
 #include "Proximity.h"
 #include "Tune.h"
@@ -19,18 +17,35 @@ enum sign {
 };
 
 void solve(sign i);
-// while loop to replace main loop()
 void doubleLeft();
 void doubleRight();
 void finish();
 
 void solve(sign i) {
-  switch(i) {
+  switch(i) 
+  {
     LEFT:
       turnLeft();
       break;
+    
+    RIGHT:
+      turnRight();
+      break;
+    
+    U_TURN:
+      uTurn();
+      break;
+    
+    DOUBLE_RIGHT:
+      doubleRight();
+      break;
+    
     DOUBLE_LEFT:
       doubleLeft();
+      break;
+    
+    FINISH: 
+      celebrate();
       break;
   }
 }
@@ -41,6 +56,14 @@ void doubleLeft() {
     moveFront();
   }
   turnLeft();
+}
+
+void doubleRight() {
+  turnRight();
+  while (getFrontDistance() > GAP) {
+    moveFront();
+  }
+  turnRight();
 }
 
 #endif

@@ -4,7 +4,7 @@
 #include <MeMCore.h>
 
 MePort IR(PORT_3);
-MeUltrasonicSensor ultrasonic(PORT_3);
+MeUltrasonicSensor ultrasonic(PORT_2);
 
 void onIR();
 void offIR();

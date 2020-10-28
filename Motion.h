@@ -5,15 +5,24 @@
 #include "Proximity.h"
 
 #define MAX_DISTANCE 3
-#define MIN_ANALOG 50
-#define MAX_ANALOG 400
-#define MIN_GAP 100
-#define MAX_GAP 150
-
+//#define MAX_ANALOG_LEFT 610
+//#define MAX_ANALOG_RIGHT 590
+//#define MIN_GAP_LEFT 520
+//#define MAX_GAP_LEFT 580
+//#define MIN_GAP_RIGHT 450
+//#define MAX_GAP_RIGHT 550
 
 MeDCMotor motorLeft(M1);
 MeDCMotor motorRight(M2);
 
+double MAX_ANALOG_LEFT;
+double MAX_ANALOG_RIGHT; 
+double MIN_GAP_LEFT; 
+double MAX_GAP_LEFT;
+double MIN_GAP_RIGHT;
+double MAX_GAP_RIGHT;
+
+void calibrateMotion();
 void moveFront();
 void adjustAngle(double right, double left);
 void adjustCenter(double right, double left);
@@ -24,37 +33,78 @@ void turnRight();
 void uTurn();
 void halt();
 
+void printm() {
+  Serial.print(MAX_ANALOG_LEFT);
+  Serial.print(" ");
+  Serial.print(MIN_GAP_LEFT);
+  Serial.print(" ");
+  Serial.print(MAX_GAP_LEFT);
+  Serial.print(" ");
+  Serial.print("---");
+  Serial.print(" ");
+  Serial.print(MAX_ANALOG_RIGHT);
+  Serial.print(" ");
+  Serial.print(MIN_GAP_RIGHT);
+  Serial.print(" ");
+  Serial.println(MAX_GAP_RIGHT);
+}
+
+void calibrateMotion() {
+  MAX_ANALOG_RIGHT = 0;
+  MAX_ANALOG_LEFT = 0;
+  for (int i = 0; i < 20; i++) {
+    MAX_ANALOG_RIGHT += readRight();
+  }
+  for (int i = 0; i < 20; i++) {
+    MAX_ANALOG_LEFT += readLeft();
+  }
+  MAX_ANALOG_LEFT = (MAX_ANALOG_LEFT / 20) - 15;
+  MAX_ANALOG_RIGHT = (MAX_ANALOG_RIGHT / 20) - 15;
+  
+  MIN_GAP_LEFT = (85 * MAX_ANALOG_LEFT) / 100;
+  MAX_GAP_LEFT = (70 * MAX_ANALOG_LEFT) / 100;
+  MIN_GAP_RIGHT = (85 * MAX_ANALOG_RIGHT) / 100;
+  MAX_GAP_RIGHT = (70 * MAX_ANALOG_RIGHT) / 100;
+}
+
 void moveFront() {
   int left = readLeft();
   int right = readRight();
   adjustAngle(left, right);
-  delay(100); // needed?
 }
 
 // handle missing walls, bounce-band, use digital?
-void adjustAngle(double right, double left) {
-  if (right == -1 && left == -1) {
+void adjustAngle(double left, double right) {
+//  Serial.print(left);
+//  Serial.print(" ");
+//  Serial.print(right);
+//  Serial.print(" ");
+  if (left > MAX_ANALOG_LEFT && right > MAX_ANALOG_RIGHT) {
     motorLeft.run(-255);
     motorRight.run(255);
-  } else if (right == -1) {
-    adjustLeft(left);
-  } else if (left == -1) {
+//    Serial.println("center");
+  } else if (left> MAX_ANALOG_LEFT) {
     adjustRight(right);
+  } else if (right > MAX_ANALOG_RIGHT) {
+    adjustLeft(left);
   } else {
-    adjustCenter(right, left);
+    adjustCenter(left, right);
   }
 }
 
-void adjustCenter(double right, double left) {
-  if (left < MIN_GAP) {
+void adjustCenter(double left, double right) {
+  if (left < MIN_GAP_LEFT) {
     motorLeft.run(-255);
     motorRight.run(200);
-  } else if (right < MIN_GAP) {
+//    Serial.println("center turn right");
+  } else if (right < MIN_GAP_RIGHT) {
     motorLeft.run(-200);
     motorRight.run(255);
+//    Serial.println("center turn left");
   } else {
     motorLeft.run(-255);
     motorRight.run(255);
+//    Serial.println("center straight");
   }
 }
 
@@ -78,28 +128,34 @@ void adjustCenter(double right, double left) {
 //}
 
 void adjustLeft(double left) {
-  if (left < MIN_GAP) {
+  if (left < MIN_GAP_LEFT) {
     motorLeft.run(-255);
     motorRight.run(200);
-  } else if (left > MAX_GAP) {
+//    Serial.println("left turn right");
+  } else if (left > MAX_GAP_LEFT) {
     motorLeft.run(-200);
     motorRight.run(255);
+//    Serial.println("left turn left");
   } else {
     motorLeft.run(-255);
     motorRight.run(255);
+//    Serial.println("left straight");
   }
 }
 
 void adjustRight(double right) {
-  if (right < MIN_GAP) {
+  if (right < MIN_GAP_RIGHT) {
     motorLeft.run(-200);
     motorRight.run(255);
-  } else if (right > MAX_GAP) {
+//    Serial.println("right turn right");
+  } else if (right > MAX_GAP_RIGHT) {
     motorLeft.run(-255);
     motorRight.run(200);
+//    Serial.println("right turn left");
   } else {
     motorLeft.run(-255);
     motorRight.run(255);
+//    Serial.println("right straight");
   }
 }
 
