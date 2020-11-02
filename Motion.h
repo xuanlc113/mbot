@@ -3,7 +3,6 @@
 
 #include <MeMCore.h>
 #include "Proximity.h"
-//#include "Waypoint.h"
 
 #define MAX_DISTANCE 3
 

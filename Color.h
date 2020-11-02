@@ -12,7 +12,6 @@ MeLightSensor lightSensor(PORT_8);
 #define SCANTIMES 5
 #define LDRwait 10
 
-
 long RGBvalues[3] = {};
 long total = 0;
 long blackvalues[3] = {157, 129, 141};

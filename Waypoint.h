@@ -1,7 +1,6 @@
 #ifndef WAYPOINT_H
 #define WAYPOINT_H
 
-// detect black line with array of a range of black values
 MeLineFollower lineFinder(PORT_1);
 
 bool bothLineIn();
