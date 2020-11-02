@@ -189,8 +189,13 @@ void turnRight() {
 }
 
 void uTurn() {
-  motorLeft.run(255);
-  motorRight.run(255);
+  if (readLeft() < HAS_LEFT_WALL) {
+    motorLeft.run(-255);
+    motorRight.run(-255);
+  } else {
+    motorLeft.run(255);
+    motorRight.run(255);
+  }
   delay(600);
 }
 
