@@ -22,29 +22,28 @@ void doubleRight();
 void finish();
 
 void solve(sign i) {
-  switch(i) 
-  {
-    LEFT:
+  switch(i) {
+    case LEFT:
       turnLeft();
       break;
     
-    RIGHT:
+    case RIGHT:
       turnRight();
       break;
     
-    U_TURN:
+    case U_TURN:
       uTurn();
       break;
     
-    DOUBLE_RIGHT:
+    case DOUBLE_RIGHT:
       doubleRight();
       break;
     
-    DOUBLE_LEFT:
+    case DOUBLE_LEFT:
       doubleLeft();
       break;
     
-    FINISH: 
+    case FINISH: 
       celebrate();
       break;
   }

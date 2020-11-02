@@ -6,25 +6,21 @@
 
 void setup() {
   Serial.begin(9600);
-//  onIR();
-//  calibrateMotion();
-//  printm();
+  led.setpin(13);
+  onIR();
 }
 
 void loop() {
-//  if (atWaypoint()) {
-//    solve(detectColor());
-//  } else {
-//    moveFront();
-//  }
-  onIR();
-  calibrateMotion();
-  printm();
-  offIR();
-  delay(200);
-  
-//    Serial.print(readLeft());
-//    Serial.print(" ");
-//    Serial.println(readRight());
-//    delay(200);
+  if (atWaypoint()) {
+    solve(detectColor());
+  } else {
+    moveFront();
+  }
+
+//test ir
+//  onIR();
+//  calibrateMotion();
+//  printm();
+//  offIR();
+//  delay(200);
 }
