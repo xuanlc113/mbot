@@ -28,8 +28,6 @@ sign detectColor();
 void getRGB();
 
 sign detectColor() {
-  motorLeft.run(0);
-  motorRight.run(0);
   getRGB();
   // long color = 0;
   if (RGBvalues[0] >= 65) {

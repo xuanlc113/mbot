@@ -12,21 +12,12 @@ void setup() {
 
 void loop() {
   if (atWaypoint()) {
+    halt();
     solve(detectColor());
   } 
-else {
+  else {
     moveFront();
   }
-
-//uTurn();
-//halt();
-//delay(2000);
-//doubleLeft();
-//halt();
-//delay(2000);
-//doubleRight();
-//halt();
-//delay(2000);
 
 //test ir
 //  onIR();

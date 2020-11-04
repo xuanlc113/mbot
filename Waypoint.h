@@ -21,8 +21,7 @@ bool atWaypoint() {
   
   switch(sensorState)
   {
-    case S1_IN_S2_IN:  
-  Serial.println(" sdfs"); 
+    case S1_IN_S2_IN:
       return true;
       break;
     case S1_IN_S2_OUT:
@@ -44,18 +43,18 @@ bool atWaypoint() {
 
 void adjustWaypointLeft() {
   while (!bothLineIn()) {
-    motorLeft.run(0);
+    motorLeft.stop();
     motorRight.run(255);
   }
-  motorRight.run(0);
+  motorRight.stop();
 }
 
 void adjustWaypointRight() {
   while (!bothLineIn()) {
     motorLeft.run(-255);
-    motorRight.run(0);
+    motorRight.stop();
   }
-  motorLeft.run(0);
+  motorLeft.stop();
 }
 
 #endif

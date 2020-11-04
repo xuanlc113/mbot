@@ -5,43 +5,37 @@
 #include "Proximity.h"
 
 #define DELAY 600
+#define LEFT_WALL 520
+#define RIGHT_WALL 640
+#define IR_MAX_DISTANCE 6
+#define ULTRASOUND_GAP 8
 
-#define MAX_DISTANCE 3
-
-#define HAS_LEFT_WALL 520
-#define HAS_RIGHT_WALL 640
-//5cm
-#define MIN_GAP_LEFT 430
-#define MIN_GAP_RIGHT 540
-//3cm
-#define EX_MIN_GAP_LEFT 400
-#define EX_MIN_GAP_RIGHT 500
+// y = 0.0086x + 0.6004
+const double GRADIENT_LEFT = 0.0086;
+const double INTERCEPT_LEFT = 0.6004;
+const double GRADIENT_RIGHT = 121.73;
+const double INTERCEPT_RIGHT = -9.9589;
 
 MeDCMotor motorLeft(M1);
 MeDCMotor motorRight(M2);
 
+// for calibration
 double MAX_ANALOG_LEFT;
-double MAX_ANALOG_RIGHT; 
+double MAX_ANALOG_RIGHT;
 
-void calibrateMotion();
 void moveFront();
 void adjustAngle(double right, double left);
-void adjustCenter(double right, double left);
-void adjustLeft(double left);
-void adjustRight(double right);
-bool movingLeft();
-bool movingRight();
-void newSteerLeft(int right);
-void newSteerRight(int left);
+bool hasLeftWall(int left);
+bool hasRightWall(int right);
+void steerLeft(int right);
+void steerRight(int left);
 void steerStraight();
-void steerLeft();
-void steerHardLeft();
-void steerRight();
-void steerHardRight();
+void halt();
 void turnLeft();
 void turnRight();
 void uTurn();
-void halt();
+void doubleLeft();
+void doubleRight();
 
 void printm() {
   Serial.print(MAX_ANALOG_LEFT);
@@ -58,8 +52,8 @@ void calibrateMotion() {
   for (int i = 0; i < 20; i++) {
     MAX_ANALOG_LEFT += readLeft();
   }
-  MAX_ANALOG_LEFT = (MAX_ANALOG_LEFT / 20) - 15;
-  MAX_ANALOG_RIGHT = (MAX_ANALOG_RIGHT / 20) - 15;
+  MAX_ANALOG_LEFT = (MAX_ANALOG_LEFT / 20);
+  MAX_ANALOG_RIGHT = (MAX_ANALOG_RIGHT / 20);
 }
 
 void moveFront() {
@@ -69,55 +63,33 @@ void moveFront() {
 }
 
 void adjustAngle(double left, double right) {
-  if (right < HAS_RIGHT_WALL) {
-    adjustRight(right);
-  } else if (left < HAS_LEFT_WALL) {
-    adjustLeft(left);
+  if (hasRightWall(right)) {
+    steerLeft(right);
+  } else if (hasLeftWall(left)) {
+    steerRight(left);
   } else {
-    adjustCenter(left, right);
-  }
-}
-
-void adjustCenter(double left, double right) {
-  steerStraight();
-}
-
-void adjustLeft(double left) {
-//  if (left < EX_MIN_GAP_RIGHT) {
-//      steerHardRight();
-//  } else 
-  if (left < MIN_GAP_LEFT){
-    newSteerRight(left);
-  }
-  else {
     steerStraight();
   }
 }
 
-void adjustRight(double right) {
-//  if (right < EX_MIN_GAP_RIGHT) {
-//      steerHardLeft();
-//  } else 
-  if (right < MIN_GAP_RIGHT){
-    newSteerLeft(right);
-  }
-  else {
-    steerStraight();
-  }
+bool hasLeftWall(int left) {
+  return left < LEFT_WALL;
 }
 
-//right y = 121.73x - 9.9589
-void newSteerLeft(int right) {
-  double y = ((double) 122 * right) - 10;
-  int i = (int) y * -255;
+bool hasRightWall(int right) {
+  return right < RIGHT_WALL;
+}
+
+void steerLeft(int right) {
+  double ratio = ((GRADIENT_RIGHT * right) + INTERCEPT_RIGHT) / IR_MAX_DISTANCE;
+  int i = (int) ratio * -255;
   motorLeft.run(i);
   motorRight.run(255);
 }
 
-//left y = 105x - 570
-void newSteerRight(int left) {
-  double y = ((double) 105 * left) - 57;
-  int i = (int) y * 255;
+void steerRight(int left) {
+  double ratio = ((GRADIENT_LEFT * left) + INTERCEPT_LEFT) / IR_MAX_DISTANCE;
+  int i = (int) ratio * 255;
   motorLeft.run(-255);
   motorRight.run(i);
 }
@@ -127,47 +99,29 @@ void steerStraight() {
   motorRight.run(255);
 }
 
-void steerLeft() {
-  motorLeft.run(-225);
-  motorRight.run(255);
-}
-
-void steerHardLeft() {
-  motorLeft.run(-200);
-  motorRight.run(255);
-}
-
-void steerRight() {
-  motorLeft.run(-255);
-  motorRight.run(225);
-}
-
-void steerHardRight() {
-  motorLeft.run(-255);
-  motorRight.run(200);
+void halt() {
+  motorLeft.stop();
+  motorRight.stop();
 }
 
 // puzzle motion
 
 void turnLeft() {
-  motorLeft.run(0);
+  motorLeft.stop();
   motorRight.run(255);
   delay(DELAY);
 }
 
 void turnRight() {
   motorLeft.run(-255);
-  motorRight.run(0);
+  motorRight.stop();
   delay(DELAY);
 }
 
 void uTurn() {
-  if (readLeft() < HAS_LEFT_WALL) {
+  if (hasLeftWall(readLeft())) {
     motorLeft.run(-255);
     motorRight.run(-255);
-  } else if (readRight() < HAS_RIGHT_WALL) {
-    motorLeft.run(255);
-    motorRight.run(255);
   } else {
     motorLeft.run(255);
     motorRight.run(255);
@@ -175,9 +129,20 @@ void uTurn() {
   delay(DELAY - 50);
 }
 
-void halt() {
-  motorLeft.stop();
-  motorRight.stop();
+void doubleLeft() {
+  turnLeft();
+  while (getFrontDistance() > ULTRASOUND_GAP) {
+    moveFront();
+  }
+  turnLeft();
+}
+
+void doubleRight() {
+  turnRight();
+  while (getFrontDistance() > ULTRASOUND_GAP) {
+    moveFront();
+  }
+  turnRight();
 }
 
 #endif
