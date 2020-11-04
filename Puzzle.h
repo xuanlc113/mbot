@@ -5,7 +5,7 @@
 #include "Proximity.h"
 #include "Tune.h"
 
-#define GAP 4
+#define GAP 8
 
 enum sign {
   LEFT,
@@ -52,7 +52,8 @@ void solve(sign i) {
 void doubleLeft() {
   turnLeft();
   while (getFrontDistance() > GAP) {
-    moveFront();
+//    moveFront();
+steerStraight();
   }
   turnLeft();
 }
@@ -60,7 +61,8 @@ void doubleLeft() {
 void doubleRight() {
   turnRight();
   while (getFrontDistance() > GAP) {
-    moveFront();
+//    moveFront();
+    steerStraight();
   }
   turnRight();
 }

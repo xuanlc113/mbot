@@ -17,7 +17,6 @@ bool bothLineIn() {
 }
 
 bool atWaypoint() {
-  Serial.println("run");
   int sensorState = lineFinder.readSensors();
   
   switch(sensorState)

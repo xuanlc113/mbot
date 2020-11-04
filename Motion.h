@@ -4,16 +4,18 @@
 #include <MeMCore.h>
 #include "Proximity.h"
 
+#define DELAY 600
+
 #define MAX_DISTANCE 3
 
-#define HAS_LEFT_WALL 540
-#define HAS_RIGHT_WALL 570
+#define HAS_LEFT_WALL 520
+#define HAS_RIGHT_WALL 640
 //5cm
-#define MIN_GAP_LEFT 520
-#define MIN_GAP_RIGHT 530
+#define MIN_GAP_LEFT 430
+#define MIN_GAP_RIGHT 540
 //3cm
 #define EX_MIN_GAP_LEFT 400
-#define EX_MIN_GAP_RIGHT 400
+#define EX_MIN_GAP_RIGHT 500
 
 MeDCMotor motorLeft(M1);
 MeDCMotor motorRight(M2);
@@ -29,6 +31,8 @@ void adjustLeft(double left);
 void adjustRight(double right);
 bool movingLeft();
 bool movingRight();
+void newSteerLeft(int right);
+void newSteerRight(int left);
 void steerStraight();
 void steerLeft();
 void steerHardLeft();
@@ -65,7 +69,6 @@ void moveFront() {
 }
 
 void adjustAngle(double left, double right) {
-//  printm();
   if (right < HAS_RIGHT_WALL) {
     adjustRight(right);
   } else if (left < HAS_LEFT_WALL) {
@@ -80,73 +83,43 @@ void adjustCenter(double left, double right) {
 }
 
 void adjustLeft(double left) {
-  if (left < EX_MIN_GAP_RIGHT) {
-      steerHardRight();
-  } else if (left < MIN_GAP_LEFT){
-    steerRight();
-//    Serial.println("left steer right");
-  } 
-//  else if (movingLeft()) {
-//    steerRight();
-//  } else if (movingRight()) {
-//    steerLeft();
-//  } 
+//  if (left < EX_MIN_GAP_RIGHT) {
+//      steerHardRight();
+//  } else 
+  if (left < MIN_GAP_LEFT){
+    newSteerRight(left);
+  }
   else {
     steerStraight();
-//    Serial.println("left straight");
   }
 }
 
 void adjustRight(double right) {
-  if (right < EX_MIN_GAP_RIGHT) {
-      steerHardLeft();
-  } else if (right < MIN_GAP_RIGHT){
-    steerLeft();
+//  if (right < EX_MIN_GAP_RIGHT) {
+//      steerHardLeft();
+//  } else 
+  if (right < MIN_GAP_RIGHT){
+    newSteerLeft(right);
   }
-//  else if (movingLeft()) {
-//    steerRight();
-//  } else if (movingRight()) {
-//    steerLeft();
-//  }
   else {
     steerStraight();
   }
 }
 
-bool movingRight() {
-  double prev;
-  double next;
-  for (int i = 0; i < 5; i++) {
-    prev += readLeft();
-  }
-  delay(10);
-  for (int i = 0; i < 5; i++) {
-    next += readLeft();
-  }
-  prev = prev / 10;
-  next = next / 10;
-  if (next - prev > 10) {
-    return true;
-  }
-  return false;
+//right y = 121.73x - 9.9589
+void newSteerLeft(int right) {
+  double y = ((double) 122 * right) - 10;
+  int i = (int) y * -255;
+  motorLeft.run(i);
+  motorRight.run(255);
 }
 
-bool movingLeft() {
-  double prev;
-  double next;
-  for (int i = 0; i < 10; i++) {
-    prev += readRight();
-  }
-  delay(10);
-  for (int i = 0; i < 10; i++) {
-    next += readRight();
-  }
-  prev = prev / 10;
-  next = next / 10;
-  if (next - prev > 10) {
-    return true;
-  }
-  return false;
+//left y = 105x - 570
+void newSteerRight(int left) {
+  double y = ((double) 105 * left) - 57;
+  int i = (int) y * 255;
+  motorLeft.run(-255);
+  motorRight.run(i);
 }
 
 void steerStraight() {
@@ -179,24 +152,27 @@ void steerHardRight() {
 void turnLeft() {
   motorLeft.run(0);
   motorRight.run(255);
-  delay(600);
+  delay(DELAY);
 }
 
 void turnRight() {
   motorLeft.run(-255);
   motorRight.run(0);
-  delay(600);
+  delay(DELAY);
 }
 
 void uTurn() {
   if (readLeft() < HAS_LEFT_WALL) {
     motorLeft.run(-255);
     motorRight.run(-255);
+  } else if (readRight() < HAS_RIGHT_WALL) {
+    motorLeft.run(255);
+    motorRight.run(255);
   } else {
     motorLeft.run(255);
     motorRight.run(255);
   }
-  delay(600);
+  delay(DELAY - 50);
 }
 
 void halt() {
