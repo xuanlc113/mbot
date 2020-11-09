@@ -9,13 +9,13 @@ MeLightSensor lightSensor(PORT_8);
 
 #define LDR 0   //LDR sensor pin at A0
 #define LED 13  //Check Indicator to signal Calibration Completed
-#define SCANTIMES 5
-#define LDRwait 10
+#define SCANTIMES 50
+#define LDRwait 5
 
 long RGBvalues[3] = {};
 long total = 0;
 //long blackvalues[3] = {182, 150, 165}; //black values for near full charge
-long blackvalues[3] = {232, 190, 205};
+long blackvalues[3] = {118, 114, 127};
 /*long lookupvalues[5][3] = {
   {45, 0, 0}, //R
   {60, 35, 10}, //Y
@@ -33,7 +33,7 @@ sign detectColor() {
   if (RGBvalues[0] >= 65) {
     return U_TURN; // color = 2;
   }
-  else if (RGBvalues[0] >= 40) {
+  else if (RGBvalues[0] >= 45) {
     return LEFT; // color = 1;
   }
   else if (RGBvalues[0] >= 20) {
@@ -44,7 +44,7 @@ sign detectColor() {
     }
   } 
   else {
-    if (RGBvalues[1] >= 15) {
+    if (RGBvalues[1] >= 20) {
       return RIGHT; //color = 3;
     }
     else {

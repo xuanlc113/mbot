@@ -4,57 +4,54 @@
 #include <MeMCore.h>
 #include "Proximity.h"
 
-#define DELAY 600
-#define LEFT_WALL 520
-#define RIGHT_WALL 640
+#define DELAY 225
+#define LEFT_WALL 550
+#define RIGHT_WALL 550
 #define IR_MAX_DISTANCE 6
-#define ULTRASOUND_GAP 8
+#define ULTRASOUND_GAP 10
 
-// y = 0.0086x + 0.6004
-const double GRADIENT_LEFT = 0.0086;
-const double INTERCEPT_LEFT = 0.6004;
-const double GRADIENT_RIGHT = 121.73;
-const double INTERCEPT_RIGHT = -9.9589;
+const double GRADIENT_LEFT = 0.0056;
+const double INTERCEPT_LEFT = 1.1788;
+const double GRADIENT_RIGHT = 0.0066;
+const double INTERCEPT_RIGHT = 0.8552;
 
 MeDCMotor motorLeft(M1);
 MeDCMotor motorRight(M2);
 
-// for calibration
-double MAX_ANALOG_LEFT;
-double MAX_ANALOG_RIGHT;
-
+// checks IR sensors and adjusts mbot
 void moveFront();
+
+// checks if mbot is close to either walls and adjusts accordingly
 void adjustAngle(double right, double left);
+
+// checks if mbot is close to corresponding wall
 bool hasLeftWall(int left);
 bool hasRightWall(int right);
+
+// steers the mbot by reducing speed on one wheel
+// distance to wall to estimated through the distance-voltage graph of each IR sensor
+// the linear portion of each graph (< 5cm) is used to estimate distance and how hard to steer
 void steerLeft(int right);
 void steerRight(int left);
+
+// no steering, full speed ahead
 void steerStraight();
+
+// stops mbot
 void halt();
+
+// the following functions are for solving each puzzle case
+
+// fixed 90 degree turns
 void turnLeft();
 void turnRight();
+
+// fixed 180 degree turn
 void uTurn();
+
+// turns, then moves forward until a front wall is detected, where it then turns again
 void doubleLeft();
 void doubleRight();
-
-void printm() {
-  Serial.print(MAX_ANALOG_LEFT);
-  Serial.print(" ");
-  Serial.println(MAX_ANALOG_RIGHT);
-}
-
-void calibrateMotion() {
-  MAX_ANALOG_RIGHT = 0;
-  MAX_ANALOG_LEFT = 0;
-  for (int i = 0; i < 20; i++) {
-    MAX_ANALOG_RIGHT += readRight();
-  }
-  for (int i = 0; i < 20; i++) {
-    MAX_ANALOG_LEFT += readLeft();
-  }
-  MAX_ANALOG_LEFT = (MAX_ANALOG_LEFT / 20);
-  MAX_ANALOG_RIGHT = (MAX_ANALOG_RIGHT / 20);
-}
 
 void moveFront() {
   int left = readLeft();
@@ -107,14 +104,14 @@ void halt() {
 // puzzle motion
 
 void turnLeft() {
-  motorLeft.stop();
+  motorLeft.run(255);
   motorRight.run(255);
   delay(DELAY);
 }
 
 void turnRight() {
   motorLeft.run(-255);
-  motorRight.stop();
+  motorRight.run(-255);
   delay(DELAY);
 }
 
@@ -126,7 +123,7 @@ void uTurn() {
     motorLeft.run(255);
     motorRight.run(255);
   }
-  delay(DELAY - 50);
+  delay(250);
 }
 
 void doubleLeft() {

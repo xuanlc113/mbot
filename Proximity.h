@@ -6,20 +6,19 @@
 MePort IR(PORT_3);
 MeUltrasonicSensor ultrasonic(PORT_2);
 
+// set IR sensors to high
 void onIR();
-void offIR();
+
+// reads IR sensor reading on corresponding side
 int readLeft();
 int readRight();
+
+// gets distance from front wall using ultrasonic sensor
 double getFrontDistance();
 
 void onIR() {
   IR.dWrite1(HIGH);
   IR.dWrite2(HIGH);
-}
-
-void offIR() {
-  IR.dWrite1(LOW);
-  IR.dWrite2(LOW);
 }
 
 int readLeft() {

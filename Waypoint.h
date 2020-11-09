@@ -3,9 +3,13 @@
 
 MeLineFollower lineFinder(PORT_1);
 
+// check if there is a line
 bool bothLineIn();
+
+// adjusts mbot based on line sensor
 bool atWaypoint();
 
+// turns mbot to be perpendicular to the waypoint strip
 void adjustWaypointLeft();
 void adjustWaypointRight();
 
