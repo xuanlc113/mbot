@@ -22,7 +22,7 @@ MeDCMotor motorRight(M2);
 void moveFront();
 
 // checks if mbot is close to either walls and adjusts accordingly
-void adjustAngle(double right, double left);
+void adjustAngle(int right, int left);
 
 // checks if mbot is close to corresponding wall
 bool hasLeftWall(int left);
@@ -59,7 +59,7 @@ void moveFront() {
   adjustAngle(left, right);
 }
 
-void adjustAngle(double left, double right) {
+void adjustAngle(int left, int right) {
   if (hasRightWall(right)) {
     steerLeft(right);
   } else if (hasLeftWall(left)) {

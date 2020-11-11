@@ -16,19 +16,37 @@ long RGBvalues[3] = {};
 long total = 0;
 //long blackvalues[3] = {182, 150, 165}; //black values for near full charge
 long blackvalues[3] = {118, 114, 127};
-/*long lookupvalues[5][3] = {
-  {45, 0, 0}, //R
-  {60, 35, 10}, //Y
-  {10, 25, 10}, //G
-  {30, 20, 40}, //P
-  {35, 40, 50} //B
-};*/
 
-sign detectColor();
-void getRGB();
+// Gets the average RGB values of the detected color
+void updateRGB();
+// Using the detected RGB values, return the enum value for the detected color
+Sign detectColor();
 
-sign detectColor() {
-  getRGB();
+void updateRGB() {
+  for (long cycle = 0; cycle < 3; cycle += 1) {
+    switch(cycle) {
+      case 0:
+        led.setColor(255, 0, 0);
+        break;
+      case 1:
+        led.setColor(0, 255, 0);
+        break;
+      case 2:
+        led.setColor(0, 0, 255);
+        break;
+      }
+    led.show(); //Must use .show() to make new colour take effect.
+    for (long i = 0; i < SCANTIMES; i += 1) {
+      total += lightSensor.read();
+      delay(LDRwait);
+    }
+    RGBvalues[cycle] = (long)((double)total / SCANTIMES - blackvalues[cycle]);
+    total = 0;
+  }
+}
+
+Sign detectColor() {
+  updateRGB();
   // long color = 0;
   if (RGBvalues[0] >= 65) {
     return U_TURN; // color = 2;
@@ -50,28 +68,5 @@ sign detectColor() {
     else {
       return FINISH; // color = 0;
     }
-  }
-}
-
-void getRGB() {
-  for (long cycle = 0; cycle < 3; cycle += 1) {
-    switch(cycle) {
-      case 0:
-        led.setColor(255, 0, 0);
-        break;
-      case 1:
-        led.setColor(0, 255, 0);
-        break;
-      case 2:
-        led.setColor(0, 0, 255);
-        break;
-      }
-    led.show(); //Must use .show() to make new colour take effect.
-    for (long i = 0; i < SCANTIMES; i += 1) {
-      total += lightSensor.read();
-      delay(LDRwait);
-    }
-    RGBvalues[cycle] = (long)((double)total / SCANTIMES - blackvalues[cycle]);
-    total = 0;
   }
 }

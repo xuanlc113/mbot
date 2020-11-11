@@ -5,7 +5,7 @@
 #include "Proximity.h"
 #include "Tune.h"
 
-enum sign {
+enum Sign {
   LEFT,
   RIGHT,
   U_TURN,
@@ -15,10 +15,10 @@ enum sign {
 };
 
 // activates puzzle solving motion according to each case
-void solve(sign i);
+void solve(Sign sign);
 
-void solve(sign i) {
-  switch(i) {
+void solve(Sign sign) {
+  switch(sign) {
     case LEFT:
       turnLeft();
       break;
