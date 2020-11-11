@@ -5,7 +5,7 @@
 
 MeBuzzer buzzer;
 
-// stops, plays a tune, then an infinite loop to prevent main loop from running
+// stops, plays a tune, then enters an infinite loop to prevent any further action
 void celebrate();
 
 void celebrate() {

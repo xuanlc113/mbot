@@ -29,11 +29,11 @@ bool atWaypoint() {
       return true;
       break;
     case S1_IN_S2_OUT:
-      // adjustWaypointRight(); 
+       adjustWaypointRight(); 
       return false; 
       break;
     case S1_OUT_S2_IN:
-      // adjustWaypointLeft();
+       adjustWaypointLeft();
       return false; 
       break;
     case S1_OUT_S2_OUT: 
