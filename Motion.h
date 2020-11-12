@@ -5,11 +5,12 @@
 #include "Proximity.h"
 
 #define DELAY 225
-#define LEFT_WALL 550
-#define RIGHT_WALL 550
+#define LEFT_WALL 550 // IR values less than this indicates the prescence of a left wall
+#define RIGHT_WALL 550 // IR values less than this indicates the prescence of a right wall
 #define IR_MAX_DISTANCE 6
 #define ULTRASOUND_GAP 10
 
+// gradient and intecept values for distance-voltage line
 const double GRADIENT_LEFT = 0.0056;
 const double INTERCEPT_LEFT = 1.1788;
 const double GRADIENT_RIGHT = 0.0066;
